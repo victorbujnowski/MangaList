@@ -2,7 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { stepChapter, isStatusKey } from './constants';
 import { buildObraPayload, normalizeGeneros, normalizeNota } from './db';
 import { buildPublicSnapshot, toPublicObra, ShareTooLargeError, genToken } from './share';
-import { buildCoverUrl, fallbackQueries, pickTitle, toKeywords } from './cover';
+import {
+  bestMatch,
+  fallbackQueries,
+  isBrokenCoverUrl,
+  kitsuneSeriesUrlFromTitle,
+  mangaDexNames,
+  titleSimilarity,
+  toKeywords,
+} from './cover';
 import { extractUrl } from '../hooks/useShareTarget';
 import { translations } from '../i18n/translations';
 import type { AppUser, Obra } from '../types';
@@ -99,25 +107,67 @@ describe('cover', () => {
     expect(toKeywords('O Retorno do Herói de Nível Máximo')).toEqual(['retorno', 'heroi', 'nivel', 'maximo']);
   });
 
-  it('fallbackQueries: tradução, sufixos de palavras-chave e original', () => {
-    expect(fallbackQueries('Solo Leveling', 'Solo Leveling')).toEqual(['solo leveling']);
-    expect(fallbackQueries('A Volta do Mago', 'The Return of the Mage')).toEqual([
-      'The Return of the Mage',
-      'return mage',
-      'volta mago',
+  it('fallbackQueries: tradução, sufixos com 3+ palavras e palavras-chave do original', () => {
+    expect(fallbackQueries('Solo Leveling', 'Solo Leveling')).toEqual([]);
+    expect(fallbackQueries('O Retorno do Herói de Nível Máximo', 'The Return of the Peak-Level Hero')).toEqual([
+      'The Return of the Peak-Level Hero',
+      'peak level hero',
+      'retorno heroi nivel maximo',
     ]);
   });
 
-  it('pickTitle prefere inglês, depois romaji', () => {
-    expect(pickTitle({ id: 'x', attributes: { title: { 'ja-ro': 'Sousou no Frieren', en: 'Frieren' } } })).toBe('Frieren');
-    expect(pickTitle({ id: 'x', attributes: { title: { 'ja-ro': 'Sousou no Frieren' } } })).toBe('Sousou no Frieren');
+  it('titleSimilarity ignora caixa, acento e pontuação', () => {
+    expect(titleSimilarity('Kaiju No 8', 'Kaiju No.8')).toBe(1);
+    expect(titleSimilarity('Sousou No Frieren', 'Sousou no Frieren')).toBe(1);
+    expect(titleSimilarity('Necromante: O Rei da Calamidade', 'necromante o rei da calamidade')).toBe(1);
+    expect(titleSimilarity('Frieren', 'Frieren: Beyond Journey’s End')).toBe(0.9);
+    expect(titleSimilarity('Dandadan', 'One Piece')).toBe(0);
   });
 
-  it('buildCoverUrl', () => {
-    const m = { id: 'abc', relationships: [{ type: 'cover_art', attributes: { fileName: 'f.jpg' } }] };
-    expect(buildCoverUrl(m)).toBe('https://uploads.mangadex.org/covers/abc/f.jpg.512.jpg');
-    expect(buildCoverUrl(m, 256)).toBe('https://uploads.mangadex.org/covers/abc/f.jpg.256.jpg');
-    expect(buildCoverUrl({ id: 'abc' })).toBeNull();
+  const media = (id: number, romaji: string, english: string | null = null, synonyms: string[] = []) => ({
+    id,
+    title: { romaji, english, native: null },
+    synonyms,
+    startDate: { year: 2020 },
+    coverImage: { extraLarge: `https://s4.anilist.co/${id}.jpg`, large: null },
+  });
+
+  it('bestMatch escolhe o título mais parecido, inclusive por sinônimo', () => {
+    const list = [media(1, 'Kaiju No. 8: B-Side'), media(2, 'Kaiju No.8'), media(3, 'Kaijuu')];
+    expect(bestMatch('Kaiju No 8', list)?.media.id).toBe(2);
+    expect(bestMatch('Aishiteru Game wo Owarasetai', [media(9, 'Aishiteru Game wo Owarasetai', 'I Want to End This Love Game')])?.media.id).toBe(9);
+    expect(bestMatch('Rei Necromante', [media(5, 'Other', null, ['Rei Necromante'])])?.media.id).toBe(5);
+  });
+
+  it('bestMatch recusa resultado diferente (melhor sem capa do que capa errada)', () => {
+    expect(bestMatch('Necromante O Rei Da Calamidade', [media(1, 'One Piece'), media(2, 'Berserk')])).toBeNull();
+    expect(bestMatch('Kaiju No 8', [])).toBeNull();
+  });
+
+  it('kitsuneSeriesUrlFromTitle gera o slug do WordPress', () => {
+    expect(kitsuneSeriesUrlFromTitle('Escola De Surpresas')).toBe('https://kitsuneyako.com/manga/escola-de-surpresas/');
+    expect(kitsuneSeriesUrlFromTitle('Contos de Cultivação de um Regressor')).toBe(
+      'https://kitsuneyako.com/manga/contos-de-cultivacao-de-um-regressor/'
+    );
+    expect(kitsuneSeriesUrlFromTitle('Necromante: O Rei da Calamidade')).toBe(
+      'https://kitsuneyako.com/manga/necromante-o-rei-da-calamidade/'
+    );
+    expect(kitsuneSeriesUrlFromTitle('  ')).toBeNull();
+  });
+
+  it('mangaDexNames inclui os títulos alternativos (pt-br)', () => {
+    const names = mangaDexNames({
+      attributes: { title: { ko: 'Muhanui Mabeopsa' }, altTitles: [{ en: 'The Infinite Mage' }, { 'pt-br': 'Mago do infinito' }] },
+    });
+    expect(names).toEqual(['Muhanui Mabeopsa', 'The Infinite Mage', 'Mago do infinito']);
+    expect(Math.max(...names.map((n) => titleSimilarity('Mago Do Infinito', n)))).toBe(1);
+  });
+
+  it('isBrokenCoverUrl marca capas do MangaDex e ausentes', () => {
+    expect(isBrokenCoverUrl(null)).toBe(true);
+    expect(isBrokenCoverUrl('https://uploads.mangadex.org/covers/a/b.jpg.512.jpg')).toBe(true);
+    expect(isBrokenCoverUrl('https://s4.anilist.co/file/x.jpg')).toBe(false);
+    expect(isBrokenCoverUrl('https://kitsuneyako.com/wp-content/uploads/2026/01/CapaNRM.webp')).toBe(false);
   });
 });
 

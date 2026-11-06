@@ -1,6 +1,23 @@
 # Publicar o proxy de capa no Cloudflare Workers (grátis, sem cartão)
 
-O arquivo `manga-proxy.js` é um proxy CORS para a API do MangaDex. Publicar leva ~10 min e não precisa instalar nada.
+O arquivo `manga-proxy.js` (v2) faz duas coisas para o app:
+- `/cover?page=<link>`: lê a capa e o título oficiais na página da obra (Kitsune Yako);
+- `/?url=<api.mangadex.org/...>`: repassa a API do MangaDex com CORS (para achar o ID no AniList).
+
+## Já tem o Worker (atualizar para a v2)
+
+1. Entre em **https://dash.cloudflare.com** → **Workers & Pages** → abra o Worker `mangalist`.
+2. Clique em **Edit code**.
+3. Apague tudo, cole o conteúdo de `manga-proxy.js` e clique em **Deploy**.
+4. Teste: abra no navegador
+   `https://mangalist.victorbujnowski.workers.dev/cover?page=https%3A%2F%2Fkitsuneyako.com%2Fmanga%2Fnecromante-o-rei-da-calamidade%2F`
+   Deve aparecer um JSON com `"image": "https://kitsuneyako.com/wp-content/uploads/..."`.
+
+Não precisa mexer no `.env.local` nem refazer o deploy do app.
+
+## Criar do zero
+
+Publicar leva ~10 min e não precisa instalar nada.
 
 ## Passo a passo (pelo painel)
 

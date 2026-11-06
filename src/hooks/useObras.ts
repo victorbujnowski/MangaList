@@ -95,6 +95,15 @@ export function useObras(userId: string | null | undefined) {
     );
   }, []);
 
+  /** Troca só a capa, sem reordenar (usado pela recuperação automática). */
+  const updateCapa = useCallback(async (id: string, capa: string): Promise<void> => {
+    if (isFirebaseConfigured) {
+      await dbApi.updateCapa(id, capa);
+      return;
+    }
+    setObras((prev) => prev.map((o) => (o.id === id ? { ...o, capa } : o)));
+  }, []);
+
   const deleteObra = useCallback(async (id: string): Promise<void> => {
     if (isFirebaseConfigured) {
       await dbApi.deleteObra(id);
@@ -103,5 +112,5 @@ export function useObras(userId: string | null | undefined) {
     animateLayout(() => setObras((prev) => prev.filter((o) => o.id !== id)));
   }, []);
 
-  return { obras, loading, loadError, addObra, updateObra, updateCapitulo, deleteObra };
+  return { obras, loading, loadError, addObra, updateObra, updateCapitulo, updateCapa, deleteObra };
 }

@@ -106,6 +106,14 @@ export async function updateCapitulo(obraId: string, capitulo: string): Promise<
   });
 }
 
+/**
+ * Só a capa, SEM mexer em atualizadoEm: a recuperação automática de capas não
+ * deve reordenar a estante.
+ */
+export async function updateCapa(obraId: string, capa: string): Promise<void> {
+  await updateDoc(doc(requireDb(), COLLECTION, obraId), { capa });
+}
+
 export async function deleteObra(obraId: string): Promise<void> {
   await deleteDoc(doc(requireDb(), COLLECTION, obraId));
 }

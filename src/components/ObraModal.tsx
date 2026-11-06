@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { Check, ExternalLink, ImageOff, Search, Trash2, TriangleAlert } from 'lucide-react';
 import { parseUrl, SITES, SITE_KEYS } from '../lib/urlParser';
-import { fetchCover, searchManga, type MangaSearchResult } from '../lib/cover';
+import { findCover, searchCovers, type MangaSearchResult } from '../lib/cover';
 import { STATUS_KEYS, TIPO_KEYS } from '../lib/constants';
 import { useI18n } from '../i18n/I18nContext';
 import type { Obra, ObraDraft, StatusKey, TipoKey } from '../types';
@@ -90,20 +90,29 @@ export default function ObraModal({ open, obra, initialUrl = '', onSave, onDelet
   }, [pickerOpen]);
 
   // Busca automática da melhor capa (ao extrair a URL). Ignora respostas velhas.
-  const autoCover = useCallback(async (title: string | null, mangaId: string | null) => {
-    if (!title?.trim() && !mangaId) return;
-    const req = ++coverReq.current;
-    setCoverStatus('loading');
-    const result = await fetchCover({ title, mangaId });
-    if (req !== coverReq.current) return;
-    if (result) {
-      setForm((f) => ({ ...f, capa: result.url }));
-      setCoverMatch(result.matchedTitle ?? '');
-      setCoverStatus('found');
-    } else {
-      setCoverStatus('notfound');
-    }
-  }, []);
+  const autoCover = useCallback(
+    async (input: { pageUrl: string; siteKey: string; title: string | null; mangaId: string | null }) => {
+      if (!input.title?.trim() && !input.mangaId && !input.pageUrl) return;
+      const req = ++coverReq.current;
+      setCoverStatus('loading');
+      const result = await findCover(input);
+      if (req !== coverReq.current) return;
+      if (result) {
+        setForm((f) => ({
+          ...f,
+          capa: result.url,
+          // O site devolve o título com a grafia oficial (acentos, pontuação):
+          // troca o título tirado da URL, se o usuário ainda não mexeu nele.
+          titulo: result.source === 'site' && result.title && f.titulo === input.title ? result.title : f.titulo,
+        }));
+        setCoverMatch(result.title ?? '');
+        setCoverStatus('found');
+      } else {
+        setCoverStatus('notfound');
+      }
+    },
+    []
+  );
 
   const runSearch = useCallback(async (query: string) => {
     const q = query.trim();
@@ -114,7 +123,7 @@ export default function ObraModal({ open, obra, initialUrl = '', onSave, onDelet
     setSearching(true);
     setResults([]);
     try {
-      const { results: found, usedQuery: used } = await searchManga(q, { signal: ctrl.signal });
+      const { results: found, usedQuery: used } = await searchCovers(q, { signal: ctrl.signal });
       setResults(found);
       setUsedQuery(used);
       setSearched(q);
@@ -146,7 +155,7 @@ export default function ObraModal({ open, obra, initialUrl = '', onSave, onDelet
       }));
       setTitleError(false);
       if (result.needsManualTitle) window.setTimeout(() => titleRef.current?.focus(), 0);
-      void autoCover(result.title, result.mangaId);
+      void autoCover({ pageUrl: raw.trim(), siteKey: result.siteKey, title: result.title, mangaId: result.mangaId });
     },
     [autoCover, t]
   );

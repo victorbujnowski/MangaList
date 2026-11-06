@@ -5,6 +5,7 @@ import { useAuth } from './hooks/useAuth';
 import { useObras } from './hooks/useObras';
 import { useShareTarget } from './hooks/useShareTarget';
 import { useHashView } from './hooks/useHashView';
+import { useCoverBackfill } from './hooks/useCoverBackfill';
 import { useI18n } from './i18n/I18nContext';
 import { STATUS_CONFIG, STATUS_KEYS, TIPO_KEYS } from './lib/constants';
 import { SITES, SITE_KEYS } from './lib/urlParser';
@@ -59,7 +60,8 @@ function Shelf() {
   const { isDark, toggleTheme } = useTheme();
   const auth = useAuth();
   const { user, isLocal } = auth;
-  const { obras, loading: obrasLoading, loadError, addObra, updateObra, updateCapitulo, deleteObra } = useObras(user?.uid);
+  const { obras, loading: obrasLoading, loadError, addObra, updateObra, updateCapitulo, updateCapa, deleteObra } =
+    useObras(user?.uid);
   const { sharedUrl, clearShared } = useShareTarget();
   const { t, locale } = useI18n();
   const toast = useToast();
@@ -73,6 +75,9 @@ function Shelf() {
   const [modal, setModal] = useState<ModalState>({ open: false, obra: null, initialUrl: '', key: 0 });
 
   const account = useHashView('conta');
+
+  // Obras sem capa (ou com capa do MangaDex, que não aparece mais) ganham capa sozinhas.
+  useCoverBackfill(obras, Boolean(user) && !obrasLoading && !loadError, updateCapa);
 
   // Compartilhamento por link
   const [shareToken, setShareToken] = useState<string | null>(null);

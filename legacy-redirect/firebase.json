@@ -1,0 +1,14 @@
+{
+  "hosting": {
+    "site": "organizador-de-obras-d695d",
+    "public": "public",
+    "ignore": ["firebase.json", "**/.*"],
+    "rewrites": [{ "source": "**", "destination": "/index.html" }],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      }
+    ]
+  }
+}
