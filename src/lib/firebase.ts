@@ -19,11 +19,11 @@ const firebaseConfig = {
 
 /**
  * Considera configurado quando os campos essenciais estão presentes.
- * VITE_FORCE_LOCAL=true (npm run dev:local) ignora as credenciais: útil para
+ * `npm run dev:local` (vite --mode demo) ignora as credenciais: útil para
  * testar a interface sem tocar nos dados reais.
  */
 export const isFirebaseConfigured =
-  env.VITE_FORCE_LOCAL !== 'true' &&
+  env.MODE !== 'demo' &&
   Boolean(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId);
 
 let db: Firestore | null = null;

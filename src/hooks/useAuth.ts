@@ -40,7 +40,7 @@ const AUTH_ERROR_KEYS: Record<string, TranslationKey> = {
   'auth/operation-not-allowed': 'autherr_not_allowed',
 };
 
-export function authErrorKey(e: unknown): TranslationKey {
+function authErrorKey(e: unknown): TranslationKey {
   const code = (e as { code?: string } | null)?.code;
   return (code && AUTH_ERROR_KEYS[code]) || 'autherr_generic';
 }

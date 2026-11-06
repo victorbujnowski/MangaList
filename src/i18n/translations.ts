@@ -26,7 +26,6 @@ const pt = {
   cancel: 'Cancelar',
   search_btn: 'Buscar',
   cap_short: 'Cap.',
-  please_wait: 'Aguarde…',
   user_fallback: 'Leitor',
 
   // Cabeçalho
@@ -257,7 +256,6 @@ const en: Dict = {
   cancel: 'Cancel',
   search_btn: 'Search',
   cap_short: 'Ch.',
-  please_wait: 'Please wait…',
   user_fallback: 'Reader',
 
   header_add: 'New title',
@@ -472,7 +470,6 @@ const es: Dict = {
   cancel: 'Cancelar',
   search_btn: 'Buscar',
   cap_short: 'Cap.',
-  please_wait: 'Espera…',
   user_fallback: 'Lector',
 
   header_add: 'Nueva obra',

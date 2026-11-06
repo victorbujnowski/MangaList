@@ -16,7 +16,7 @@
  * Se o site responder com verificação anti-bot, devolvemos image=null: não há
  * tentativa de contornar proteção nenhuma.
  *
- * Como publicar: veja COMO_PUBLICAR.md nesta pasta.
+ * Como publicar: veja o README.md desta pasta.
  */
 
 const API_HOSTS = ['api.mangadex.org'];
@@ -121,7 +121,7 @@ function extractCover(html, baseUrl) {
   const candidates = imgs
     .map((tag) => ({ src: attr(tag, 'src') || attr(tag, 'data-src'), alt: decodeEntities(attr(tag, 'alt') || '') }))
     .filter((c) => c.src && /\/wp-content\/uploads\//.test(c.src) && !/logo|icon|avatar|banner/i.test(c.src));
-  const norm = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+  const norm = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
   const byAlt = title && candidates.find((c) => c.alt && norm(c.alt) === norm(title));
   const pick = byAlt || candidates[0];
   return { image: pick ? absolute(pick.src, baseUrl) : null, title: title || pick?.alt || null };

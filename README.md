@@ -1,50 +1,93 @@
+<div align="center">
+
+<img src="public/icon.svg" width="88" alt="MangaList" />
+
 # MangaList
 
-Seu catálogo pessoal de mangás, webtoons, manhwas e manhuas. Cole a URL do capítulo e o app guarda título, capítulo e capa. PWA com React, TypeScript, Vite e Firebase.
+**Todas as suas obras catalogadas em um só lugar.**
 
-**App no ar:** https://mangalist-app.web.app
+Catálogo pessoal de mangás, webtoons, manhwas e manhuas: cole o link do capítulo
+e o app guarda título, capítulo e capa. Se o site de leitura sumir, seu progresso fica.
+
+[**Abrir o app**](https://mangalist-app.web.app) · [Arquitetura](docs/ARQUITETURA.md)
+
+![React](https://img.shields.io/badge/React-18-20232a?logo=react&logoColor=61dafb)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5-646cff?logo=vite&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-ffca28?logo=firebase&logoColor=black)
+![PWA](https://img.shields.io/badge/PWA-instalável-5a0fc8?logo=pwa&logoColor=white)
+
+</div>
+
+<!-- Capturas: salve as imagens em docs/screenshots/ e descomente.
+<p align="center">
+  <img src="docs/screenshots/estante.png" width="72%" alt="Estante" />
+  <img src="docs/screenshots/celular.png" width="22%" alt="No celular" />
+</p>
+-->
 
 ## Funcionalidades
 
-- Cole a URL do capítulo e o título e o capítulo são extraídos sozinhos (Sakura Mangás, Kitsune Yako, MangaDex)
-- Capa buscada na API do MangaDex, com tradução PT→EN quando o título original não acha nada
-- Botões −/+ para mudar de capítulo; a obra atualizada sobe para o topo
-- Status (Lendo, Pausado, Concluído, Dropado), filtros por tipo e site, busca sem acento
-- Estante compartilhável por link, só leitura (nota, gêneros e anotações continuam privados)
-- Login com Google ou e-mail/senha; dados sincronizados em tempo real no Firestore
-- Interface em português, inglês e espanhol; tema claro e escuro
-- PWA instalável com Share Target: compartilhe o link do capítulo direto do navegador do celular
+- **Adicionar colando o link.** Título, capítulo e site são extraídos da URL do capítulo.
+- **Capa automática.** Vem da página da obra, do AniList ou pelo nome em português, sem nenhum clique. Obras antigas sem capa são completadas sozinhas.
+- **Um toque por capítulo.** Botões − e + em cada card; a obra atualizada sobe para o topo.
+- **Organização.** Status (lendo, pausado, concluído, dropado), filtros por tipo e site, busca que ignora acentos.
+- **Estante compartilhável.** Link só leitura para amigos; nota, gêneros e anotações continuam privados.
+- **Conta e sincronização.** Login com Google ou e-mail; tudo salvo no Firestore em tempo real.
+- **Feito para o celular.** PWA instalável, funciona offline e recebe links pelo "Compartilhar" do navegador.
+- **Português, inglês e espanhol**, tema claro e escuro.
 
-## Rodando
+### Sites suportados
+
+| Site | Tipo | Exemplo de link |
+|---|---|---|
+| Sakura Mangás | Mangá | `sakuramangas.org/obras/chainsaw-man/97/` |
+| Kitsune Yako | Webtoon | `kitsuneyako.com/necromante-o-rei-da-calamidade-capitulo-273/` |
+| MangaDex | Mangá | `mangadex.org/title/<id>/one-piece` |
+
+Obras de outros sites podem ser cadastradas à mão.
+
+## Stack
+
+| Camada | Tecnologia |
+|---|---|
+| Interface | React 18, TypeScript estrito, CSS Modules com design tokens, ícones Lucide |
+| Build | Vite 5, `vite-plugin-pwa` (Workbox) |
+| Dados | Firebase Auth e Cloud Firestore |
+| Capas | AniList GraphQL e um Cloudflare Worker ([`infra/cover-worker`](infra/cover-worker)) |
+| Testes | Vitest |
+| Hospedagem | Firebase Hosting |
+
+## Rodando localmente
+
+Pré-requisito: **Node.js 20+**.
 
 ```bash
+git clone https://github.com/victorbujnowski/MangaList.git
+cd MangaList
 npm install
-npm run dev          # com Firebase (usa .env.local)
-npm run dev:local    # modo local: dados em memória, ignora o .env.local
+npm run dev:local
 ```
+
+`dev:local` abre o app em **modo local**: sem login, com os dados só na memória. Serve para mexer na interface sem configurar nada. Para usar contas e salvar de verdade, configure o Firebase (abaixo) e rode `npm run dev`.
 
 | Script | O que faz |
 |---|---|
-| `npm run dev` | Servidor de desenvolvimento |
-| `npm run dev:local` | Mesmo servidor em modo local, para testar a interface sem tocar nos dados reais |
-| `npm test` | Testes (Vitest): parser de URL, payload, compartilhamento, busca de capa, i18n |
-| `npm run typecheck` | Checagem de tipos (TypeScript estrito) |
-| `npm run build` | Typecheck + build de produção em `dist/` |
+| `npm run dev` | Servidor de desenvolvimento com Firebase (lê o `.env.local`) |
+| `npm run dev:local` | Servidor de desenvolvimento em modo local |
+| `npm test` | Testes (parser de URL, capas, dados, compartilhamento, traduções) |
+| `npm run typecheck` | Checagem de tipos |
+| `npm run build` | Typecheck e build de produção em `dist/` |
 
-### Modos de execução
+## Configuração
 
-| Modo | Quando | Comportamento |
-|---|---|---|
-| Firebase | `.env.local` preenchido | Login + Firestore em tempo real |
-| Local | sem `.env.local`, ou `npm run dev:local` | Sem login, dados em memória que somem ao recarregar |
-
-## Configurar o Firebase
+### Firebase
 
 1. Crie um projeto em [console.firebase.google.com](https://console.firebase.google.com).
-2. Em **Authentication > Sign-in method**, ative **Google** e **E-mail/senha**.
+2. Em **Authentication → Sign-in method**, ative **Google** e **E-mail/senha**.
 3. Crie o banco em **Firestore Database** (modo produção).
 4. Copie `.env.example` para `.env.local` e preencha com as credenciais do app web.
-5. Publique regras e índices:
+5. Publique as regras de segurança e o índice:
 
 ```bash
 npm install -g firebase-tools
@@ -52,45 +95,38 @@ firebase login
 firebase deploy --only firestore:rules,firestore:indexes
 ```
 
-As regras (`firestore.rules`) deixam cada usuário ver só as próprias obras. O índice composto (`userId` + `atualizadoEm`) é obrigatório para a lista carregar.
+### Capas
 
-## Deploy (Firebase Hosting)
+A busca de capa funciona sem configuração para a maioria das obras (AniList). Para ler capas direto do Kitsune Yako e usar links do MangaDex, publique o Worker grátis da Cloudflare e defina `VITE_COVER_PROXY` no `.env.local`. Passo a passo em [`infra/cover-worker`](infra/cover-worker).
+
+## Deploy
 
 ```bash
 npm run build
-firebase deploy
+firebase deploy --only hosting:mangalist-app
 ```
 
-O `firebase.json` configura SPA, cache imutável dos assets e cabeçalhos de segurança (CSP, HSTS, X-Frame-Options).
-
-## Busca de capa (proxy CORS)
-
-A API do MangaDex só libera CORS para `localhost`. Em produção, `src/lib/cover.ts` cai num proxy quando a chamada direta falha. Defina `VITE_COVER_PROXY` com a URL de um Cloudflare Worker (código e passo a passo em [`cloudflare-worker/`](cloudflare-worker/)). Sem ele, o app usa um proxy público de reserva, mais lento.
-
-## Design
-
-Direção **editorial de mangá**: papel e tinta, um único destaque vermelho, serifa nos títulos (Fraunces), sans no texto (Instrument Sans) e mono nos números (JetBrains Mono). As fontes são self-hosted e entram no cache do PWA. Os tokens ficam em [`src/styles/tokens.css`](src/styles/tokens.css); nada de cor ou espaçamento solto nos componentes.
+O `firebase.json` configura SPA, cache imutável dos assets e cabeçalhos de segurança (CSP, HSTS).
 
 ## Estrutura
 
 ```
 src/
-  components/
-    ui/               Button, Field, Dialog (<dialog> nativo), Toast, Cover
-    Header, LibraryControls, ObraCard, ObraModal, Login, UserArea, PublicList, …
-  hooks/              useAuth, useObras, useTheme, useShareTarget, useHashView
-  lib/                urlParser, cover, db, share, firebase, constants (+ testes)
-  i18n/               translations (pt/en/es, tipadas), I18nContext
-  styles/             tokens.css, global.css
-  types.ts            Obra, ObraDraft, PublicListDoc, AppUser
-public/theme-init.js  aplica o tema antes do primeiro paint
-cloudflare-worker/    proxy CORS opcional para a busca de capa
+  screens/         telas: estante, login, conta, lista pública
+  components/      card, formulário da obra, cabeçalho, filtros
+  components/ui/   design system: botão, campos, diálogo, aviso, capa, loader
+  hooks/           auth, obras, tema, recuperação de capas, share target
+  lib/             parser de URL, capas, Firestore, compartilhamento (+ testes)
+  i18n/            traduções pt/en/es
+  styles/          tokens e estilos globais
+infra/
+  cover-worker/    Cloudflare Worker das capas
+  legacy-redirect/ redirecionamento do endereço antigo
+docs/              arquitetura e decisões
 ```
 
-## Sites suportados
+Detalhes de fluxos, dados e decisões em [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
 
-| Site | Tipo | Exemplo |
-|---|---|---|
-| Sakura Mangás | Mangá | `/obras/chainsaw-man/97/` ou `/manga/<slug>/capitulo-<n>` |
-| Kitsune Yako | Webtoon | `/necromante-o-rei-da-calamidade-capitulo-273/` ou `/serie/<slug>/<n>/` |
-| MangaDex | Mangá | `/title/<uuid>/<slug>` (`/chapter/<uuid>` pede o título) |
+## Créditos
+
+Capas e títulos: [AniList](https://anilist.co) e os próprios sites de leitura. Identificação de obras: [MangaDex](https://mangadex.org). O MangaList não hospeda nenhum capítulo; ele só guarda onde você parou.

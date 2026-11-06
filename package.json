@@ -1,9 +1,14 @@
 {
-  "name": "organizador-de-obras",
+  "name": "mangalist",
   "private": true,
   "version": "3.0.0",
   "type": "module",
-  "description": "PWA para catalogar mangás e webtoons — React + Vite + Firebase",
+  "description": "Catálogo pessoal de mangás, webtoons, manhwas e manhuas: PWA com React, TypeScript, Vite e Firebase.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/victorbujnowski/MangaList.git"
+  },
+  "homepage": "https://mangalist-app.web.app",
   "scripts": {
     "dev": "vite",
     "dev:local": "vite --mode demo",

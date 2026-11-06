@@ -13,7 +13,7 @@ const PUBLIC = 'publicLists';
 const USERS = 'users';
 
 /** Firestore limita documentos a 1 MiB; deixamos folga para metadados. */
-export const PUBLIC_LIST_MAX_BYTES = 900_000;
+const PUBLIC_LIST_MAX_BYTES = 900_000;
 
 export class ShareTooLargeError extends Error {
   constructor() {

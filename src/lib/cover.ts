@@ -29,7 +29,7 @@ const WORKER_ORIGIN = (() => {
 })();
 
 /** Similaridade mínima para aceitar um resultado automaticamente. */
-export const MATCH_THRESHOLD = 0.6;
+const MATCH_THRESHOLD = 0.6;
 
 export interface CoverResult {
   url: string;
@@ -67,7 +67,7 @@ export function normalizeTitle(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 }

@@ -4,10 +4,10 @@ import { useI18n } from '../i18n/I18nContext';
 import { LANGS, LANG_LABELS } from '../i18n/translations';
 import type { ChangePasswordResult } from '../hooks/useAuth';
 import type { AppUser } from '../types';
-import { Button, cx } from './ui/Button';
-import { Field, Input } from './ui/Field';
-import { Avatar, displayNameOf } from './Avatar';
-import { Wordmark } from './Wordmark';
+import { Button, cx } from '../components/ui/Button';
+import { Field, Input } from '../components/ui/Field';
+import { Avatar, displayNameOf } from '../components/Avatar';
+import { Wordmark } from '../components/Wordmark';
 import styles from './UserArea.module.css';
 
 interface UserAreaProps {

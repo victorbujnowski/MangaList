@@ -86,7 +86,7 @@ export function normalizeChapter(raw: string | null | undefined): string | null 
 }
 
 /** Capitaliza a primeira letra de cada palavra. */
-export function toTitleCase(str: string): string {
+function toTitleCase(str: string): string {
   return str
     .split(' ')
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))

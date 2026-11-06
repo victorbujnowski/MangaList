@@ -19,6 +19,9 @@ firestore-debug.log*
 *.log
 .vite/
 
+# Ferramentas locais (preview do Claude Code)
+.claude/
+
 # Sistema operacional / editor
 .DS_Store
 Thumbs.db

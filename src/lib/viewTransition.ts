@@ -24,5 +24,12 @@ export function animateLayout(update: () => void): void {
     update();
     return;
   }
-  document.startViewTransition(() => flushSync(update));
+  const transition = document.startViewTransition(() => flushSync(update));
+  // Uma transição nova cancela a anterior ("Transition was skipped"): é o
+  // esperado quando a lista muda rápido. O estado já foi aplicado; só evita
+  // o erro de promessa não tratada no console.
+  const ignore = () => {};
+  transition.ready.catch(ignore);
+  transition.finished.catch(ignore);
+  transition.updateCallbackDone.catch(ignore);
 }

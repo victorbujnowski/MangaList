@@ -4,9 +4,9 @@ import { fetchPopularCovers } from '../lib/cover';
 import { useI18n } from '../i18n/I18nContext';
 import { LANGS, LANG_LABELS } from '../i18n/translations';
 import type { TranslationKey } from '../i18n/translations';
-import { Button, cx } from './ui/Button';
-import { Field, Input } from './ui/Field';
-import { Wordmark } from './Wordmark';
+import { Button, cx } from '../components/ui/Button';
+import { Field, Input } from '../components/ui/Field';
+import { Wordmark } from '../components/Wordmark';
 import styles from './Login.module.css';
 
 const MOSAIC = 24;

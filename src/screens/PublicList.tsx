@@ -5,11 +5,11 @@ import { STATUS_CONFIG, STATUS_KEYS } from '../lib/constants';
 import { useI18n } from '../i18n/I18nContext';
 import { useTheme } from '../hooks/useTheme';
 import type { PublicListDoc } from '../types';
-import ObraCard from './ObraCard';
-import { Loader } from './ui/Loader';
-import EmptyState from './EmptyState';
-import { StatusTabs, type FilterOption } from './LibraryControls';
-import { Wordmark } from './Wordmark';
+import ObraCard from '../components/ObraCard';
+import { Loader } from '../components/ui/Loader';
+import EmptyState from '../components/EmptyState';
+import { StatusTabs, type FilterOption } from '../components/LibraryControls';
+import { Wordmark } from '../components/Wordmark';
 import styles from './PublicList.module.css';
 
 type State = { status: 'loading' } | { status: 'ready'; data: PublicListDoc } | { status: 'missing' };
