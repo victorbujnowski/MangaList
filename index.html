@@ -31,9 +31,51 @@
     <!-- Aplica o tema salvo antes do primeiro paint (evita "piscar" claro→escuro). -->
     <!--    Arquivo externo (não inline) para respeitar a CSP script-src 'self'. -->
     <script src="/theme-init.js"></script>
+
+    <!-- Tela de abertura enquanto o JS baixa. Mesma animação do componente
+         Loader (src/components/ui/Loader.module.css): mantenha em sincronia.
+         O React substitui o conteúdo de #root ao montar. -->
+    <style>
+      html { background: #f4f1ea; color: #141414; }
+      html[data-theme='dark'] { background: #131211; color: #ede8de; }
+      #boot {
+        position: fixed; inset: 0; display: grid; place-items: center;
+        animation: bootIn 240ms ease-out 150ms both;
+      }
+      #boot rect { fill: currentColor; transform-box: fill-box; transform-origin: 50% 100%;
+        animation: bootShelve 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+      #boot .b2 { fill: #d7263d; animation-delay: 140ms; }
+      html[data-theme='dark'] #boot .b2 { fill: #ea4b5c; }
+      #boot .b3 { transform-origin: 100% 100%; animation-name: bootTilt; animation-delay: 280ms; }
+      #boot .shelf { opacity: 0.35; animation: none; }
+      @keyframes bootIn { from { opacity: 0; } }
+      @keyframes bootShelve {
+        0%, 100% { transform: scaleY(0.15); opacity: 0.25; }
+        35%, 65% { transform: scaleY(1); opacity: 1; }
+      }
+      @keyframes bootTilt {
+        0%, 100% { transform: scaleY(0.15) rotate(0deg); opacity: 0.25; }
+        35% { transform: scaleY(1) rotate(0deg); opacity: 1; }
+        55%, 65% { transform: scaleY(1) rotate(8deg); opacity: 1; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #boot rect { animation: bootBreathe 1.6s ease-in-out infinite; }
+        #boot .b3 { transform: rotate(8deg); }
+        @keyframes bootBreathe { 50% { opacity: 0.4; } }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="boot" role="status" aria-label="Carregando MangaList">
+        <svg width="56" height="56" viewBox="0 0 24 24" aria-hidden="true" style="overflow: visible">
+          <rect class="b1" x="3" y="6" width="5" height="15" />
+          <rect class="b2" x="9.5" y="3" width="5" height="18" />
+          <rect class="b3" x="16" y="7" width="5" height="14" />
+          <rect class="shelf" x="1.5" y="21" width="21" height="1.2" />
+        </svg>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

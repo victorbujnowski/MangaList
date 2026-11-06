@@ -2,19 +2,6 @@
   min-height: 100dvh;
 }
 
-.splash {
-  display: grid;
-  place-items: center;
-  min-height: 100dvh;
-  animation: splashPulse 1.6s var(--ease-in-out) infinite;
-}
-
-@keyframes splashPulse {
-  50% {
-    opacity: 0.55;
-  }
-}
-
 .main {
   max-width: var(--page-max);
   margin: 0 auto;

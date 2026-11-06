@@ -85,7 +85,8 @@
 }
 
 .showcaseCopy {
-  max-width: 600px;
+  /* Largo o bastante para "catalogadas em um só lugar." caber numa linha. */
+  max-width: 840px;
   animation: copyIn 700ms var(--ease-out) both;
 }
 
@@ -118,10 +119,16 @@
 .headline {
   font-size: var(--text-hero);
   font-weight: 600;
-  line-height: 0.98;
+  /* 1.08: acentos (ê, í) e descendentes (q, p) não encostam na linha vizinha. */
+  line-height: 1.08;
   letter-spacing: -0.025em;
   font-variation-settings: 'opsz' 144;
   color: #f4f1ea;
+}
+
+/* Cada frase do slogan na sua própria linha. */
+.headlineLine {
+  display: block;
 }
 
 .headline em {

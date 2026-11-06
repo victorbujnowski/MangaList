@@ -1,0 +1,102 @@
+/* Mesma animação de index.html (#boot): mantenha as duas em sincronia. */
+
+.wrap {
+  display: grid;
+  place-items: center;
+  min-height: 40vh;
+  color: var(--ink);
+  /* Espera ~150 ms antes de aparecer: carregamento rápido não pisca. */
+  animation: loaderIn 240ms var(--ease-out) 150ms both;
+}
+
+.fullscreen {
+  min-height: 100dvh;
+}
+
+@keyframes loaderIn {
+  from {
+    opacity: 0;
+  }
+}
+
+.mark {
+  overflow: visible;
+}
+
+.spine {
+  fill: currentColor;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: shelve 1.4s var(--ease-in-out) infinite;
+}
+
+.s1 {
+  animation-delay: 0ms;
+}
+
+/* A do meio é a obra "em leitura": vermelho do destaque. */
+.s2 {
+  fill: var(--accent);
+  animation-delay: 140ms;
+}
+
+/* A última termina inclinada, como no logo. */
+.s3 {
+  transform-origin: 100% 100%;
+  animation-name: shelveTilt;
+  animation-delay: 280ms;
+}
+
+.shelf {
+  fill: currentColor;
+  opacity: 0.35;
+}
+
+/* Sobe da prateleira, segura, desce. */
+@keyframes shelve {
+  0%,
+  100% {
+    transform: scaleY(0.15);
+    opacity: 0.25;
+  }
+  35%,
+  65% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shelveTilt {
+  0%,
+  100% {
+    transform: scaleY(0.15) rotate(0deg);
+    opacity: 0.25;
+  }
+  35% {
+    transform: scaleY(1) rotate(0deg);
+    opacity: 1;
+  }
+  55%,
+  65% {
+    transform: scaleY(1) rotate(8deg);
+    opacity: 1;
+  }
+}
+
+/* Menos movimento: só um pulso suave de opacidade. */
+@media (prefers-reduced-motion: reduce) {
+  .spine {
+    animation: breathe 1.6s ease-in-out infinite !important;
+    animation-duration: 1.6s !important;
+    animation-iteration-count: infinite !important;
+  }
+  .s3 {
+    transform: rotate(8deg);
+  }
+
+  @keyframes breathe {
+    50% {
+      opacity: 0.4;
+    }
+  }
+}

@@ -75,6 +75,7 @@
 
 .meta {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
@@ -88,12 +89,15 @@
   font-size: var(--text-base);
   font-weight: 600;
   line-height: 1.2;
+  /* Sempre o espaço de 2 linhas: título curto não encolhe o card. */
+  min-height: 2.4em;
   letter-spacing: -0.005em;
   font-variation-settings: 'opsz' 24;
   overflow-wrap: anywhere;
 }
 
 .sub {
+  margin-bottom: var(--space-2);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -112,7 +116,7 @@
   grid-template-columns: 32px minmax(0, 1fr) 32px;
   align-items: center;
   gap: var(--space-1);
-  margin-top: var(--space-2);
+  margin-top: auto;
   padding-top: var(--space-2);
   border-top: 1px solid var(--rule);
 }
@@ -223,7 +227,7 @@
 }
 
 .capStatic {
-  margin-top: var(--space-2);
+  margin-top: auto;
   padding-top: var(--space-2);
   border-top: 1px solid var(--rule);
   font-family: var(--font-mono);

@@ -129,9 +129,11 @@ export default function Login({ onGoogle, onEmailLogin, onEmailRegister, onReset
         <div className={styles.showcaseCopy}>
           <p className={styles.eyebrow}>{t('login_eyebrow')}</p>
           <h1 className={styles.headline}>
-            {t('login_title_pre')}
-            <em>{t('login_title_em')}</em>
-            {t('login_title_post')}
+            <span className={styles.headlineLine}>{t('login_title_pre')}</span>{' '}
+            <span className={styles.headlineLine}>
+              <em>{t('login_title_em')}</em>
+              {t('login_title_post')}
+            </span>
           </h1>
           <p className={styles.sub}>{t('login_sub')}</p>
           <ol className={styles.points}>

@@ -6,7 +6,7 @@ import { useI18n } from '../i18n/I18nContext';
 import { useTheme } from '../hooks/useTheme';
 import type { PublicListDoc } from '../types';
 import ObraCard from './ObraCard';
-import ObraCardSkeleton from './ObraCardSkeleton';
+import { Loader } from './ui/Loader';
 import EmptyState from './EmptyState';
 import { StatusTabs, type FilterOption } from './LibraryControls';
 import { Wordmark } from './Wordmark';
@@ -126,11 +126,7 @@ export default function PublicList({ token }: { token: string }) {
         )}
 
         {!data ? (
-          <div className={styles.grid} aria-busy="true">
-            {Array.from({ length: 10 }, (_, i) => (
-              <ObraCardSkeleton key={i} index={i} />
-            ))}
-          </div>
+          <Loader label={t('public_loading')} />
         ) : obras.length === 0 ? (
           <EmptyState title={t('public_empty')} />
         ) : (

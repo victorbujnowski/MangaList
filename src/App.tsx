@@ -14,14 +14,13 @@ import type { Obra, ObraDraft } from './types';
 import Header from './components/Header';
 import { StatusTabs, SearchField, FiltersButton, ChipGroup, type FilterOption } from './components/LibraryControls';
 import ObraCard from './components/ObraCard';
-import ObraCardSkeleton from './components/ObraCardSkeleton';
 import ObraModal from './components/ObraModal';
 import EmptyState from './components/EmptyState';
 import Login from './components/Login';
 import PublicList from './components/PublicList';
 import UserArea from './components/UserArea';
-import { Wordmark } from './components/Wordmark';
 import { Button } from './components/ui/Button';
+import { Loader } from './components/ui/Loader';
 import { useToast } from './components/ui/Toast';
 import styles from './App.module.css';
 
@@ -259,10 +258,7 @@ function Shelf() {
   // ── Telas ────────────────────────────────────────────────
   if (auth.loading) {
     return (
-      <div className={styles.splash} aria-busy="true">
-        <Wordmark size="lg" />
-        <span className="sr-only">{t('loading')}</span>
-      </div>
+      <Loader label={t('loading')} fullscreen />
     );
   }
 
@@ -363,11 +359,7 @@ function Shelf() {
         )}
 
         {obrasLoading ? (
-          <div className={styles.grid} aria-busy="true" aria-label={t('loading')}>
-            {Array.from({ length: 12 }, (_, i) => (
-              <ObraCardSkeleton key={i} index={i} />
-            ))}
-          </div>
+          <Loader label={t('loading')} />
         ) : loadError ? (
           <EmptyState
             title={t('load_error')}
