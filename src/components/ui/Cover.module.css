@@ -1,0 +1,59 @@
+.cover {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  container-type: inline-size;
+  overflow: hidden;
+  background: var(--cover-placeholder);
+  border-radius: var(--radius-xs);
+  /* Filete interno: separa capas claras do papel. */
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.06);
+}
+
+/* Capa tipográfica: lombada à esquerda, filete vermelho e título em serifa. */
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 14cqi 12cqi 12cqi 16cqi;
+  background:
+    linear-gradient(to right, rgb(0 0 0 / 0.09) 0 7cqi, transparent 7cqi),
+    var(--cover-placeholder);
+}
+
+.placeholder::before {
+  content: '';
+  width: 18cqi;
+  height: 2px;
+  margin-bottom: 7cqi;
+  background: var(--accent);
+}
+
+.title {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: clamp(0.8125rem, 11cqi, 1.75rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+  font-variation-settings: 'opsz' 72;
+}
+
+.img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+
+.loaded {
+  opacity: 1;
+}

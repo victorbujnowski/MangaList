@@ -1,11 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="MangaList">
-  <rect width="512" height="512" rx="112" fill="#6366f1"/>
-  <g fill="none" stroke="#ffffff" stroke-width="22" stroke-linejoin="round" stroke-linecap="round">
-    <!-- Lombada central -->
-    <line x1="256" y1="150" x2="256" y2="380"/>
-    <!-- Página esquerda -->
-    <path d="M256 150 C 220 124, 168 120, 132 132 L 132 356 C 168 344, 220 348, 256 374 Z"/>
-    <!-- Página direita -->
-    <path d="M256 150 C 292 124, 344 120, 380 132 L 380 356 C 344 344, 292 348, 256 374 Z"/>
+  <!-- Fundo "tinta" a sangria total (seguro para ícone maskable). -->
+  <rect width="512" height="512" fill="#141414"/>
+  <!-- Três lombadas numa estante; a do meio, em vermelho, é a obra "em leitura". -->
+  <g transform="translate(0 6)">
+    <rect x="150" y="146" width="58" height="214" fill="#F4F1EA"/>
+    <rect x="227" y="118" width="58" height="242" fill="#D7263D"/>
+    <rect x="304" y="164" width="58" height="196" fill="#F4F1EA" transform="rotate(8 333 360)"/>
+    <rect x="150" y="174" width="58" height="6" fill="#141414"/>
+    <rect x="227" y="146" width="58" height="6" fill="#141414"/>
+    <rect x="128" y="360" width="256" height="10" fill="#F4F1EA"/>
   </g>
 </svg>

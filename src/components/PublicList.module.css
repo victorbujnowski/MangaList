@@ -1,97 +1,148 @@
 .page {
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
-.center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  min-height: 100vh;
-  padding: 24px;
-  text-align: center;
-  color: var(--text-muted);
+.top {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  padding-top: env(safe-area-inset-top);
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
 }
 
-/* Cabeçalho da lista pública */
-.head {
+.topInner {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 36px 16px 20px;
-  text-align: center;
-  border-bottom: 1px solid var(--border);
+  justify-content: space-between;
+  gap: var(--space-4);
+  height: var(--header-h);
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
 }
-.brand {
-  font-family: var(--font-display);
-  font-size: 18px;
-  letter-spacing: 2px;
-  background: linear-gradient(135deg, var(--accent) 0%, #a5b4fc 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+
+.topInner > a:first-child {
+  color: inherit;
+  text-decoration: none;
 }
-.title {
-  margin: 6px 0 0;
-  font-family: var(--font-display);
-  font-size: 30px;
-  letter-spacing: 0.5px;
-  color: var(--text-primary);
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
 }
-.count {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-muted);
+
+.cta svg {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.cta:hover {
+  color: var(--accent);
+}
+
+.cta:hover svg {
+  transform: translateX(3px);
+}
+
+.ctaSolid {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 var(--space-5);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ctaSolid:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 .main {
-  max-width: 480px;
+  max-width: var(--page-max);
   margin: 0 auto;
-  padding: 16px 16px 80px;
+  padding: var(--space-8) var(--gutter) var(--space-16);
+}
+
+.masthead {
+  padding: var(--space-6) 0 var(--space-8);
+}
+
+.dateline {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.title {
+  font-size: var(--text-2xl);
+  letter-spacing: -0.03em;
+  font-variation-settings: 'opsz' 144;
+  overflow-wrap: anywhere;
+}
+
+.titleSkeleton {
+  width: min(420px, 80%);
+  height: 48px;
+  background: var(--cover-placeholder);
+  border-radius: var(--radius-xs);
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+}
+
+.summarySep {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+
+.controls {
+  margin-bottom: var(--space-8);
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(164px, 1fr));
+  gap: var(--space-10) var(--space-6);
 }
 
-@media (min-width: 640px) {
+@media (max-width: 640px) {
   .main {
-    max-width: 100%;
-    padding: 16px 32px 80px;
+    padding-top: var(--space-2);
   }
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 16px;
-  }
-}
 
-/* Rodapé com CTA */
-.foot {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px 16px;
-  font-size: 13px;
-  color: var(--text-muted);
-  background: var(--header-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid var(--border);
-}
-.cta {
-  color: var(--accent);
-  font-weight: 600;
-  text-decoration: none;
-}
-.cta:hover {
-  text-decoration: underline;
+  .cta {
+    font-size: var(--text-xs);
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--space-8) var(--space-4);
+  }
 }

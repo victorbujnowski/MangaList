@@ -1,135 +1,96 @@
-# MangaList 📚
+# MangaList
 
-Seu catálogo pessoal de mangás e webtoons — PWA com React + Vite + Firebase.
+Seu catálogo pessoal de mangás, webtoons, manhwas e manhuas. Cole a URL do capítulo e o app guarda título, capítulo e capa. PWA com React, TypeScript, Vite e Firebase.
 
-🔗 **App no ar:** https://organizador-de-obras-d695d.web.app
+**App no ar:** https://mangalist-app.web.app
 
 ## Funcionalidades
 
-- ✅ Cole a URL do capítulo → título e capítulo extraídos automaticamente
-- ✅ Capa buscada automaticamente na API do MangaDex (funciona até para obras de outros sites)
-- ✅ Suporte a Sakura Mangás, Kitsune Yako e MangaDex
-- ✅ Botão +1 / −1 para avançar ou voltar capítulos rapidamente
-- ✅ Status: Lendo / Pausado / Concluído / Dropado
-- ✅ Filtro por status + busca por título
-- ✅ Tema escuro/claro (lembrado entre sessões)
-- ✅ PWA — instale na tela inicial do celular
-- ✅ Share Target — compartilhe a URL direto do Chrome para o app
-- ✅ Login com Google **ou** e-mail/senha (com cadastro e recuperação) + sincronização via Firestore
-- ✅ **Modo local** — roda sem Firebase, com dados em memória (começa vazio)
+- Cole a URL do capítulo e o título e o capítulo são extraídos sozinhos (Sakura Mangás, Kitsune Yako, MangaDex)
+- Capa buscada na API do MangaDex, com tradução PT→EN quando o título original não acha nada
+- Botões −/+ para mudar de capítulo; a obra atualizada sobe para o topo
+- Status (Lendo, Pausado, Concluído, Dropado), filtros por tipo e site, busca sem acento
+- Estante compartilhável por link, só leitura (nota, gêneros e anotações continuam privados)
+- Login com Google ou e-mail/senha; dados sincronizados em tempo real no Firestore
+- Interface em português, inglês e espanhol; tema claro e escuro
+- PWA instalável com Share Target: compartilhe o link do capítulo direto do navegador do celular
 
-## Modos de execução
+## Rodando
 
-O app detecta automaticamente se há credenciais Firebase:
+```bash
+npm install
+npm run dev          # com Firebase (usa .env.local)
+npm run dev:local    # modo local: dados em memória, ignora o .env.local
+```
+
+| Script | O que faz |
+|---|---|
+| `npm run dev` | Servidor de desenvolvimento |
+| `npm run dev:local` | Mesmo servidor em modo local, para testar a interface sem tocar nos dados reais |
+| `npm test` | Testes (Vitest): parser de URL, payload, compartilhamento, busca de capa, i18n |
+| `npm run typecheck` | Checagem de tipos (TypeScript estrito) |
+| `npm run build` | Typecheck + build de produção em `dist/` |
+
+### Modos de execução
 
 | Modo | Quando | Comportamento |
 |---|---|---|
-| **Firebase** | `.env.local` preenchido | Login Google + dados persistidos no Firestore, sincronizados em tempo real |
-| **Local** | sem `.env.local` | Sem login, dados em memória que começam vazios (duram até recarregar) — ideal para testar a interface |
+| Firebase | `.env.local` preenchido | Login + Firestore em tempo real |
+| Local | sem `.env.local`, ou `npm run dev:local` | Sem login, dados em memória que somem ao recarregar |
 
-## Setup
+## Configurar o Firebase
 
-### 1. Clone e instale
-
-```bash
-git clone https://github.com/<seu-usuario>/Organizador-de-Obras.git
-cd Organizador-de-Obras
-npm install
-```
-
-### 2. (Opcional) Configure o Firebase
-
-Sem este passo o app roda em **modo local**. Para persistir dados:
-
-1. Crie um projeto em [console.firebase.google.com](https://console.firebase.google.com)
-2. Em **Authentication > Sign-in method**, ative os provedores **Google** e **E-mail/senha**
-3. Crie um banco em **Firestore Database** (modo produção)
-4. Copie `.env.example` para `.env.local` e preencha com as credenciais do app web
-
-### 3. Regras e índices do Firestore
-
-As regras (`firestore.rules`) e o índice composto (`firestore.indexes.json`) já estão no repositório. As regras garantem que cada usuário só acesse as próprias obras; o índice é necessário para a consulta `userId + ordenação por data`. Publique via CLI:
+1. Crie um projeto em [console.firebase.google.com](https://console.firebase.google.com).
+2. Em **Authentication > Sign-in method**, ative **Google** e **E-mail/senha**.
+3. Crie o banco em **Firestore Database** (modo produção).
+4. Copie `.env.example` para `.env.local` e preencha com as credenciais do app web.
+5. Publique regras e índices:
 
 ```bash
 npm install -g firebase-tools
 firebase login
-firebase use --add            # selecione seu projeto
 firebase deploy --only firestore:rules,firestore:indexes
 ```
 
-> Sem o índice, a lista aparece vazia e o console mostra um erro com um link para criá-lo (alternativa ao deploy acima).
+As regras (`firestore.rules`) deixam cada usuário ver só as próprias obras. O índice composto (`userId` + `atualizadoEm`) é obrigatório para a lista carregar.
 
-### 4. Rode localmente
-
-```bash
-npm run dev
-```
-
-### 5. Deploy (Firebase Hosting)
-
-O `firebase.json` já configura o hosting (SPA) apontando para `dist/`:
+## Deploy (Firebase Hosting)
 
 ```bash
 npm run build
-firebase deploy               # publica hosting + regras + índices
+firebase deploy
 ```
+
+O `firebase.json` configura SPA, cache imutável dos assets e cabeçalhos de segurança (CSP, HSTS, X-Frame-Options).
 
 ## Busca de capa (proxy CORS)
 
-A capa é buscada na **API pública do MangaDex**. Em produção há um detalhe: a API
-do MangaDex só libera CORS para origens `localhost`, então o navegador bloqueia as
-chamadas a partir do domínio publicado. A solução é um proxy CORS leve.
+A API do MangaDex só libera CORS para `localhost`. Em produção, `src/lib/cover.ts` cai num proxy quando a chamada direta falha. Defina `VITE_COVER_PROXY` com a URL de um Cloudflare Worker (código e passo a passo em [`cloudflare-worker/`](cloudflare-worker/)). Sem ele, o app usa um proxy público de reserva, mais lento.
 
-- `src/lib/cover.js` tenta a API direta e, quando o CORS bloqueia, cai no proxy.
-- Defina `VITE_COVER_PROXY` no `.env.local` com a URL de um **Cloudflare Worker**
-  (grátis, sem cartão). O código do Worker e o passo a passo estão em
-  [`cloudflare-worker/`](cloudflare-worker/). Sem essa variável, é usado um proxy
-  público de reserva (mais lento e instável).
+## Design
 
-> As **imagens** de capa carregam direto do CDN do MangaDex (não precisam de proxy).
+Direção **editorial de mangá**: papel e tinta, um único destaque vermelho, serifa nos títulos (Fraunces), sans no texto (Instrument Sans) e mono nos números (JetBrains Mono). As fontes são self-hosted e entram no cache do PWA. Os tokens ficam em [`src/styles/tokens.css`](src/styles/tokens.css); nada de cor ou espaçamento solto nos componentes.
 
-## Estrutura do projeto
+## Estrutura
 
 ```
 src/
-  components/         ← componentes de UI, cada um com seu .module.css
-    Header.jsx
-    SearchBar.jsx
-    FilterTabs.jsx
-    ObraCard.jsx
-    ObraModal.jsx     ← formulário + parser de URL + busca de capa
-    EmptyState.jsx
-    Login.jsx
-    ErrorBoundary.jsx ← evita tela branca em erros de render
-  hooks/
-    useAuth.js        ← autenticação (Google / e-mail-senha / local)
-    useObras.js       ← obras + CRUD, com fallback local automático
-    useTheme.js       ← tema claro/escuro persistido
-    useShareTarget.js ← lê a URL recebida via compartilhamento
-  lib/
-    urlParser.js      ← parser de URLs dos 3 sites
-    cover.js          ← busca de capa no MangaDex (tradução + proxy)
-    firebase.js       ← inicialização condicional do Firebase
-    db.js             ← operações no Firestore
-    constants.js      ← status, tipos e helpers
-  styles/
-    theme.css         ← tokens de tema (CSS variables) claro/escuro
-    global.css        ← reset e estilos globais
-  App.jsx             ← orquestra hooks + componentes
-  main.jsx            ← entry point
-
-cloudflare-worker/    ← proxy CORS para a busca de capa (opcional)
-firestore.rules       ← regras de segurança (lista privada por usuário)
-firestore.indexes.json← índice composto userId + atualizadoEm
-firebase.json         ← hosting (SPA) + firestore
+  components/
+    ui/               Button, Field, Dialog (<dialog> nativo), Toast, Cover
+    Header, LibraryControls, ObraCard, ObraModal, Login, UserArea, PublicList, …
+  hooks/              useAuth, useObras, useTheme, useShareTarget, useHashView
+  lib/                urlParser, cover, db, share, firebase, constants (+ testes)
+  i18n/               translations (pt/en/es, tipadas), I18nContext
+  styles/             tokens.css, global.css
+  types.ts            Obra, ObraDraft, PublicListDoc, AppUser
+public/theme-init.js  aplica o tema antes do primeiro paint
+cloudflare-worker/    proxy CORS opcional para a busca de capa
 ```
 
-## URL Parser — sites suportados
+## Sites suportados
 
-| Site | Tipo | Exemplo de URL |
+| Site | Tipo | Exemplo |
 |---|---|---|
-| Sakura Mangás | Mangá | `/obras/chainsaw-man/97/` |
-| Kitsune Yako | Webtoon | `/necromante-o-rei-da-calamidade-capitulo-273/` |
-| MangaDex | Mangá (EN) | `/title/uuid/dungeon-meshi` (ou `/chapter/uuid`, que pede o título) |
-
-> O parser também aceita variações como `/manga/<slug>/capitulo-<n>` e `/serie/<slug>/<n>`.
+| Sakura Mangás | Mangá | `/obras/chainsaw-man/97/` ou `/manga/<slug>/capitulo-<n>` |
+| Kitsune Yako | Webtoon | `/necromante-o-rei-da-calamidade-capitulo-273/` ou `/serie/<slug>/<n>/` |
+| MangaDex | Mangá | `/title/<uuid>/<slug>` (`/chapter/<uuid>` pede o título) |

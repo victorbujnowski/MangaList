@@ -1,0 +1,234 @@
+/* ── Abas de status ───────────────────── */
+
+.tabsScroller {
+  margin: 0 calc(var(--gutter) * -1);
+  padding: 0 var(--gutter);
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--rule);
+}
+
+.tabsScroller::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-6);
+  width: max-content;
+}
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 44px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--ink-3);
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.tab::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tabActive {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.tabActive::after {
+  transform: scaleX(1);
+}
+
+.tabDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  background: var(--dot);
+}
+
+.tabCount {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+}
+
+/* ── Busca ────────────────────────────── */
+
+.search {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.searchIcon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  color: var(--ink-3);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--space-10) 0 var(--space-10);
+  background: var(--paper-sunken);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: max(16px, var(--text-base));
+  color: var(--ink);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.searchInput::-webkit-search-cancel-button {
+  display: none;
+}
+
+.searchInput::placeholder {
+  color: var(--ink-3);
+}
+
+.searchInput:focus-visible {
+  outline: none;
+  background: var(--surface);
+  border-color: var(--ink);
+}
+
+.searchClear {
+  position: absolute;
+  right: var(--space-1);
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-xs);
+  color: var(--ink-3);
+  transform: translateY(-50%);
+}
+
+.searchClear:hover {
+  color: var(--ink);
+}
+
+.searchClear svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Botão de filtros ─────────────────── */
+
+.filtersBtn {
+  flex-shrink: 0;
+}
+
+.filtersCount {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  margin-left: var(--space-1);
+  padding: 0 5px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+}
+
+@media (max-width: 480px) {
+  .filtersLabel {
+    display: none;
+  }
+
+  .filtersBtn {
+    padding: 0 var(--space-3);
+  }
+}
+
+/* ── Chips ────────────────────────────── */
+
+.chipGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  border: none;
+}
+
+.chipLegend {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.chip:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.chipActive {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.chipActive:hover {
+  color: var(--paper);
+}
+
+.chipCount {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  opacity: 0.7;
+}

@@ -1,75 +1,47 @@
-# MangaList — Contexto do Projeto
+# MangaList: contexto do projeto
 
 ## O que é
-PWA para catalogar mangás e webtoons lidos em diferentes sites, salvando título e capítulo atual. O problema principal: sites de mangá somem da internet e você perde o progresso salvo neles.
+PWA para guardar em que capítulo você está em cada mangá ou webtoon. O problema de fundo: sites de leitura somem e levam o progresso junto. Feito para compartilhar com amigos; cada usuário tem a própria lista privada.
 
 ## Stack
-- React + Vite + Firebase Firestore
-- `vite-plugin-pwa` (manifesto com share_target e ícone SVG)
-- Estilos via CSS Modules + tokens de tema em CSS variables
-- Deploy pretendido: Firebase Hosting ou Vercel
+- React 18 + TypeScript estrito + Vite 5
+- Firebase Auth (Google, e-mail/senha) e Firestore
+- CSS Modules + tokens em `src/styles/tokens.css`
+- Ícones: lucide-react. Fontes self-hosted via @fontsource
+- `vite-plugin-pwa` (manifesto com share_target)
+- Testes: Vitest (`src/**/*.test.ts`)
 
-## Sites suportados
-| Site | Tipo | Formato da URL |
-|---|---|---|
-| Sakura Mangás | Mangá | `/obras/titulo-slug/12/` (também aceita `/manga/.../capitulo-12`) |
-| Kitsune Yako | Webtoon | `/titulo-slug-capitulo-273/` |
-| MangaDex | Mangá (EN) | `/chapter/uuid` (pede título manual) ou `/title/uuid/titulo-slug` |
+## Direção visual (v3)
+Editorial de mangá. Papel `#F4F1EA`, tinta `#141414`, destaque único `#D7263D`. Serifa (Fraunces) nos títulos, Instrument Sans no texto, JetBrains Mono nos números. Evitar: gradientes decorativos, emojis, glassmorphism, cantos muito arredondados. Capas são as protagonistas; sem capa, o card mostra uma "capa tipográfica" com o título.
 
-## Funcionalidade principal
-Usuário cola a URL do capítulo → `src/lib/urlParser.js` extrai título, capítulo e site automaticamente → salva no Firestore (ou em memória, no modo local).
+## Fluxo principal
+Usuário cola a URL do capítulo → `lib/urlParser.ts` extrai título, capítulo e site → `lib/cover.ts` busca a capa no MangaDex → salva no Firestore (`lib/db.ts`) ou em memória (modo local).
 
-## Modos de execução
-- **Firebase** (`.env.local` preenchido): login Google ou e-mail/senha + Firestore em tempo real. Cada usuário vê só as próprias obras (regras em `firestore.rules`).
-- **Local** (sem credenciais): usuário fictício já logado + dados em memória, começando vazio (duram até recarregar). Detectado por `isFirebaseConfigured` em `src/lib/firebase.js`.
+## Modos
+- **Firebase:** `.env.local` preenchido.
+- **Local:** sem credenciais, ou `npm run dev:local` (`.env.demo` define `VITE_FORCE_LOCAL=true`). Usuário fictício e dados em memória.
 
-## Arquitetura
-```
-src/
-  components/   UI em CSS Modules: Header, SearchBar, FilterTabs,
-                ObraCard, ObraModal, EmptyState, Login
-  hooks/        useAuth, useObras, useTheme, useShareTarget
-  lib/          urlParser, firebase (init condicional), db, constants
-  styles/       theme.css (tokens claro/escuro) + global.css (reset)
-  App.jsx       orquestra hooks + componentes
-```
-
-## O que já está pronto
-- Parser de URLs dos 3 sites (`lib/urlParser.js`)
-- Firebase com inicialização condicional + fallback local (`lib/firebase.js`)
-- CRUD no Firestore com `nota` normalizada para número (`lib/db.js`)
-- Hooks: auth (Google + e-mail/senha / local), obras (Firestore/memória), tema persistido, share target
-- Segurança/deploy: `firestore.rules`, `firestore.indexes.json` (índice composto) e `firebase.json` (hosting SPA)
-- UI quebrada em componentes com CSS Modules e tema claro/escuro
-- App.jsx conectado: login → lista em tempo real → adicionar/editar/excluir
-- Share Target tratado: `?url=` abre o modal de adicionar já preenchido
-- Capa automática via API do MangaDex (`lib/cover.js`): busca por UUID ou por título, funciona até para obras de outros sites
-- Ícone PWA (`public/icon.svg`) + manifesto corrigido
-
-## O que falta fazer (próximos passos)
-1. **Deploy** — Firebase Hosting ou Vercel
-2. **Gerar PNGs do ícone** (opcional) — alguns alvos preferem PNG 192/512 além do SVG
-3. **Testes** — adicionar testes do `urlParser`, `cover` e dos hooks
-
-## Campos de cada obra no Firestore
-```js
-{
+## Dados no Firestore (não renomear campos)
+```ts
+obras/{id}: {
   userId, titulo, tipo, site, siteKey,
-  capituloAtual, status,  // lendo | pausado | concluído | dropado
+  capituloAtual,          // string
+  status,                 // 'lendo' | 'pausado' | 'concluído' | 'dropado'
   nota,                   // número 1–10 ou null
-  generos: [],
-  capa,                   // URL da imagem
-  notasLivres,
-  urlOrigem,
-  criadoEm, atualizadoEm // serverTimestamp
+  generos: string[], capa, notasLivres, urlOrigem,
+  criadoEm, atualizadoEm  // serverTimestamp
 }
+users/{uid}: { shareToken }
+publicLists/{token}: { ownerId, ownerName, obras: PublicObra[], updatedAt }  // cópia reduzida
 ```
 
-## Variáveis de ambiente
-Copiar `.env.example` para `.env.local` e preencher com credenciais do Firebase Console. Sem isso, o app roda em modo local.
+## Decisões
+- Erros de gravação viram toast e o formulário fica aberto (nada se perde em silêncio).
+- Troca de conta limpa a lista antes de assinar a nova.
+- Lista pública recusa passar de ~900 KB (limite de 1 MiB por documento).
+- Área da conta usa `#conta` no histórico: o voltar do celular fecha a tela.
+- Diálogos usam `<dialog>` nativo (foco preso e Esc de graça).
 
-## Como rodar
-```bash
-npm install
-npm run dev
-```
+## Próximos passos possíveis
+- PNGs 192/512 do ícone para alvos que não aceitam SVG
+- Testes de componentes (Testing Library)

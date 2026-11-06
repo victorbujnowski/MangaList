@@ -1,274 +1,244 @@
 .card {
   display: flex;
   flex-direction: column;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  animation: fadeInUp 0.35s var(--ease-out) both;
-  animation-delay: calc(min(var(--i, 0), 12) * 40ms);
-  transition:
-    transform 0.25s var(--ease-out),
-    box-shadow 0.25s var(--ease-out),
-    border-color 0.25s;
+  gap: var(--space-3);
+  min-width: 0;
+  animation: cardIn var(--dur-slow) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 24ms);
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-card-hover);
-  border-color: color-mix(in srgb, var(--site-color) 35%, var(--border));
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
 }
 
 /* ── Capa ─────────────────────────────── */
 
 .coverWrap {
   position: relative;
-  aspect-ratio: 2 / 3;
-  overflow: hidden;
-  background: color-mix(in srgb, var(--site-color) 14%, var(--card-bg));
-}
-
-.coverImg {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.35s var(--ease-out);
+  padding: 0;
+  text-align: left;
+  border-radius: var(--radius-xs);
+  transition:
+    transform var(--dur) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out);
 }
 
-.card:hover .coverImg {
-  transform: scale(1.05);
-}
-
-.coverPlaceholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  background: color-mix(in srgb, var(--site-color) 14%, var(--card-bg));
-}
-
-.coverInitials {
-  font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--site-color);
-  opacity: 0.65;
-}
-
-/* Gradiente escuro na parte inferior da capa (cria profundidade) */
-.coverGradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.55) 0%,
-    rgba(0, 0, 0, 0.1) 40%,
-    transparent 65%
-  );
-  pointer-events: none;
-}
-
-/* Badge de status — translúcido sobre a capa */
-.statusBadge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  padding: 3px 8px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.52);
-  border-left: 2.5px solid var(--status-color);
-  border-radius: 0 5px 5px 0;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-/* Botão de edição — três pontos, canto superior direito */
-.editBtn {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  font-size: 18px;
-  line-height: 1;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.42);
-  border: none;
-  border-radius: 7px;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+.coverBtn {
   cursor: pointer;
-  transition: background 0.15s, transform 0.12s var(--ease-spring);
 }
 
-.editBtn:hover {
-  background: rgba(0, 0, 0, 0.68);
+.coverBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 24px -14px rgb(20 20 20 / 0.45);
 }
 
-.editBtn:active {
-  transform: scale(0.84);
+.coverBtn:active {
+  transform: translateY(-1px);
 }
 
-/* ── Informações abaixo da capa ──────── */
+/* Etiqueta de status: tira de papel colada no canto da capa. */
+.status {
+  position: absolute;
+  left: var(--space-2);
+  bottom: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100% - var(--space-4));
+  padding: 4px 7px 4px 6px;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
 
-.info {
+.dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 1px;
+  background: var(--status-color);
+}
+
+/* ── Texto ────────────────────────────── */
+
+.meta {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 8px 10px 10px;
+  gap: 2px;
+  min-width: 0;
 }
 
-.titulo {
+.title {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  /* Altura fixa = 2 linhas: garante que capRow sempre alinha na grade */
-  height: calc(1.3em * 2);
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 13px;
+  font-size: var(--text-base);
   font-weight: 600;
-  line-height: 1.3;
-  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  font-variation-settings: 'opsz' 24;
+  overflow-wrap: anywhere;
 }
 
-/* Linha com [−] capítulo [+] */
+.sub {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--text-xs);
+  color: var(--ink-3);
+}
+
+.sep {
+  margin: 0 0.4em;
+}
+
+/* ── Capítulo ─────────────────────────── */
+
 .capRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 32px;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--rule);
 }
 
-.navBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-muted);
-  background: var(--tag-bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  cursor: pointer;
+.step {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-xs);
+  color: var(--ink-2);
   transition:
-    background 0.15s,
-    color 0.15s,
-    border-color 0.15s,
-    transform 0.12s var(--ease-spring);
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
 }
 
-.navBtn:hover:not(:disabled) {
-  color: var(--text-primary);
-  background: color-mix(in srgb, var(--text-muted) 18%, transparent);
+.step svg {
+  width: 16px;
+  height: 16px;
 }
 
-.navBtn:active:not(:disabled) {
-  transform: scale(0.84);
+.step:hover:not(:disabled) {
+  background: var(--paper-sunken);
+  color: var(--ink);
 }
 
-.navBtn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
+.step:disabled {
+  opacity: 0.3;
 }
 
-.navBtnNext {
-  color: var(--site-color);
-  background: color-mix(in srgb, var(--site-color) 13%, transparent);
-  border-color: color-mix(in srgb, var(--site-color) 25%, transparent);
+/* O "+" é a ação mais usada do app: leva o destaque. */
+.stepNext {
+  background: var(--ink);
+  color: var(--paper);
 }
 
-.navBtnNext:hover:not(:disabled) {
-  color: var(--site-color);
-  background: color-mix(in srgb, var(--site-color) 24%, transparent);
-  border-color: color-mix(in srgb, var(--site-color) 50%, transparent);
+.stepNext:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.capValue,
+.capInput {
+  height: 32px;
+  min-width: 0;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
 }
 
 .capValue {
-  flex: 1;
-  padding: 4px 4px;
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 800;
-  text-align: center;
-  color: var(--site-color);
-  background: color-mix(in srgb, var(--site-color) 8%, transparent);
-  border: 1.5px solid color-mix(in srgb, var(--site-color) 20%, transparent);
-  border-radius: 8px;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    transform 0.12s var(--ease-spring);
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 var(--space-1);
+  color: var(--ink);
+  cursor: text;
 }
 
 .capValue:hover {
-  background: color-mix(in srgb, var(--site-color) 16%, transparent);
-}
-
-.capValue:active {
-  transform: scale(0.93);
-}
-
-/* Pulse de confirmação quando o capítulo muda (avança/volta) */
-.pulse {
-  animation: capPulse 0.45s var(--ease-spring);
-}
-
-@keyframes capPulse {
-  0% {
-    transform: scale(1);
-    background: color-mix(in srgb, var(--site-color) 8%, transparent);
-  }
-  35% {
-    transform: scale(1.18);
-    background: color-mix(in srgb, var(--site-color) 34%, transparent);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--site-color) 22%, transparent);
-  }
-  100% {
-    transform: scale(1);
-    background: color-mix(in srgb, var(--site-color) 8%, transparent);
-    box-shadow: 0 0 0 0 transparent;
-  }
-}
-
-/* Capítulo estático na lista pública (sem +/−) */
-.capStatic {
-  flex: 1;
-  padding: 5px 4px;
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 800;
-  text-align: center;
-  color: var(--site-color);
-  background: color-mix(in srgb, var(--site-color) 10%, transparent);
-  border: 1.5px solid color-mix(in srgb, var(--site-color) 22%, transparent);
-  border-radius: 8px;
+  background: var(--paper-sunken);
 }
 
 .capInput {
-  flex: 1;
-  padding: 4px 4px;
-  font-family: var(--font-display);
+  width: 100%;
+  padding: 0 var(--space-1);
+  background: var(--surface);
+  border: 1px solid var(--ink);
+  color: var(--ink);
   font-size: 16px;
-  font-weight: 700;
-  text-align: center;
-  color: var(--text-primary);
-  background: var(--input-bg);
-  border: 1.5px solid var(--site-color);
-  border-radius: 8px;
+}
+
+.capInput:focus-visible {
   outline: none;
+}
+
+.capLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.capNum {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.bump .capNum {
+  animation: bump 420ms var(--ease-out);
+}
+
+@keyframes bump {
+  0% {
+    color: var(--accent);
+    transform: translateY(-3px);
+  }
+  100% {
+    color: inherit;
+    transform: none;
+  }
+}
+
+.capStatic {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.capStatic .capLabel {
+  margin-right: 2px;
+}
+
+@media (hover: none) {
+  .coverBtn:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }

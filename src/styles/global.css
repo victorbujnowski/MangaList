@@ -1,4 +1,4 @@
-/* Reset + estilos globais (antes ficavam inline no index.html) */
+/* Reset + base tipográfica + utilidades globais. */
 
 *,
 *::before,
@@ -9,27 +9,100 @@
 }
 
 html {
-  color-scheme: dark light;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
   min-height: 100vh;
-  background: var(--bg);
-  color: var(--text-primary);
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  font-feature-settings: 'ss01', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.3s;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
 }
 
 input,
 select,
 textarea,
 button {
-  font-family: inherit;
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-optical-sizing: auto;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Foco visível só para teclado, sempre no destaque. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Só para leitores de tela. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -37,55 +110,38 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 99px;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  background: var(--rule);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--paper);
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
-  to   { opacity: 1; }
+  to { opacity: 1; }
 }
 
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
-}
-
-@keyframes slideDown {
-  from { transform: translateY(0); }
-  to   { transform: translateY(100%); }
-}
-
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to   { opacity: 0; }
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ── View Transitions ─────────────────────
-   Cada card tem um `view-transition-name` único (ObraCard), então a API anima
-   o reposicionamento na grade quando a lista reordena (ex.: bater capítulo joga
-   a obra pro topo) e o fade de entrada/saída ao adicionar/remover. Só ajustamos
-   o timing pra casar com a easing do app. */
+   Cada card tem um `view-transition-name` único (ObraCard): a API anima o
+   reposicionamento quando a lista reordena (bater capítulo leva a obra ao topo). */
 ::view-transition-group(*) {
-  animation-duration: 0.32s;
+  animation-duration: var(--dur-slow);
   animation-timing-function: var(--ease-out);
 }
 
 /* ── Acessibilidade ───────────────────────
-   Respeita quem desativou animações no sistema: neutraliza keyframes, transições
-   e o shimmer/pulse. O JS (animateLayout, fechamento do modal) também já checa
-   esta preferência. */
+   Respeita quem desativou animações no sistema. O JS (animateLayout, Dialog)
+   também checa esta preferência. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

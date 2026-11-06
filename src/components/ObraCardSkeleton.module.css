@@ -1,46 +1,45 @@
 .card {
   display: flex;
   flex-direction: column;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
+  gap: var(--space-2);
+  animation: breathe 1.6s var(--ease-in-out) infinite;
+}
+
+.cover,
+.lineTitle,
+.lineSub,
+.lineCap {
+  background: var(--cover-placeholder);
+  border-radius: var(--radius-xs);
 }
 
 .cover {
   aspect-ratio: 2 / 3;
-}
-
-.info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px 10px 10px;
+  margin-bottom: var(--space-1);
 }
 
 .lineTitle {
-  height: calc(1.3em * 2);
-  border-radius: 6px;
+  width: 85%;
+  height: 14px;
+}
+
+.lineSub {
+  width: 50%;
+  height: 10px;
 }
 
 .lineCap {
-  height: 26px;
-  border-radius: 6px;
+  width: 100%;
+  height: 32px;
+  margin-top: var(--space-2);
 }
 
-/* Shimmer — varredura sutil, legível nos dois temas (base = text-muted) */
-.skel {
-  background: linear-gradient(
-    100deg,
-    color-mix(in srgb, var(--text-muted) 10%, var(--card-bg)) 30%,
-    color-mix(in srgb, var(--text-muted) 24%, var(--card-bg)) 50%,
-    color-mix(in srgb, var(--text-muted) 10%, var(--card-bg)) 70%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.3s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  from { background-position: 200% 0; }
-  to   { background-position: -200% 0; }
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
 }
